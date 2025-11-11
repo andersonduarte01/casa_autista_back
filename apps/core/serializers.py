@@ -11,17 +11,17 @@ class LoginSerializer(serializers.Serializer):
         email = data.get('email')
         password = data.get('password')
 
-        user = authenticate(email=email, password=password)
+        # O Django espera 'username', mesmo que seu USERNAME_FIELD seja 'email'
+        user = authenticate(username=email, password=password)
+
         if not user:
-            raise serializers.ValidationError("Credenciais inválidas.")
+            raise serializers.ValidationError({"detail": "Credenciais inválidas."})
 
         if not user.is_active:
-            raise serializers.ValidationError("Usuário inativo.")
+            raise serializers.ValidationError({"detail": "Usuário inativo."})
 
-        # Gera tokens
         refresh = RefreshToken.for_user(user)
 
-        # Decide o painel do usuário
         if user.is_administrator:
             painel = "/painel/admin/"
             tipo = "administrador"
