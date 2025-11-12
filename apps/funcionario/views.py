@@ -1,12 +1,13 @@
 from rest_framework import viewsets, permissions
 from .models import Funcionario
 from .serializers import FuncionarioSerializer
+from ..administrador.permissions import IsAdministrador
 
 
 class FuncionarioViewSet(viewsets.ModelViewSet):
     queryset = Funcionario.objects.all().order_by('nome_completo')
     serializer_class = FuncionarioSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated, IsAdministrador]
 
     def perform_create(self, serializer):
         funcionario = serializer.save()
